@@ -1,20 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import axios from "axios";
+import axios from 'axios';
 
 const EditMovieForm = (props) => {
   const { push } = useHistory();
 
+  const { id } = useParams();
+
   const { setMovies } = props;
   const [movie, setMovie] = useState({
-    title: "",
-    director: "",
-    genre: "",
+    title: '',
+    director: '',
+    genre: '',
     metascore: 0,
-    description: "",
+    description: '',
   });
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:9000/api/movies/${id}`)
+      .then((res) => setMovie({ ...res.data }))
+      .catch((err) => console.log(err));
+  }, []);
 
   const handleChange = (e) => {
     setMovie({
@@ -34,6 +43,7 @@ const EditMovieForm = (props) => {
       .catch((err) => {
         console.log(err);
       });
+    push(`/movies/${id}`);
   };
 
   const { title, director, genre, metascore, description } = movie;
@@ -42,7 +52,9 @@ const EditMovieForm = (props) => {
     <div className="bg-white rounded-md shadow flex-1">
       <form onSubmit={handleSubmit}>
         <div className="p-5 pb-3 border-b border-zinc-200">
-          <h4 className="text-xl font-bold">Düzenleniyor <strong>{movie.title}</strong></h4>
+          <h4 className="text-xl font-bold">
+            Düzenleniyor <strong>{movie.title}</strong>
+          </h4>
         </div>
 
         <div className="px-5 py-3">
@@ -93,14 +105,14 @@ const EditMovieForm = (props) => {
         </div>
 
         <div className="px-5 py-4 border-t border-zinc-200 flex justify-end gap-2">
-          <Link to={`/movies/1`} className="myButton bg-zinc-500">
+          <Link to={`/movies/${id}`} className="myButton bg-zinc-500">
             Vazgeç
           </Link>
           <button
             type="submit"
             className="myButton bg-green-700 hover:bg-green-600"
           >
-            Ekle
+            Kaydet
           </button>
         </div>
       </form>
